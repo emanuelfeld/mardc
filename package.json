@@ -1,0 +1,27 @@
+{
+  "name": "mardc",
+  "version": "0.0.0",
+  "description": "A wrapper for Washington, DC's master address repository",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/emanuelfeld/mardc.git"
+  },
+  "keywords": [
+    "geocode",
+    "geo",
+    "mar",
+    "washington",
+    "dc",
+    "address"
+  ],
+  "author": "@evonfriedland",
+  "license": "GPL-2.0",
+  "bugs": {
+    "url": "https://github.com/emanuelfeld/mardc/issues"
+  },
+  "homepage": "https://github.com/emanuelfeld/mardc#readme"
+}

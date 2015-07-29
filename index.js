@@ -1,6 +1,4 @@
 var request = require("request");
-var parse = require("xml-parser");
-var inspect = require("util").inspect;
 
 module.exports = mardc;
 
@@ -12,7 +10,7 @@ var mardc = function (search) {
 		qs: terms
 	}, function(error,response,body) {
 		try {
-			console.log(inspect(parse(body),{colors: true, depth: Infinity}));
+			console.log(body);
 		} catch (err) {
 			console.log("Error thrown!")
 		}

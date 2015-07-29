@@ -18,6 +18,9 @@
     "dc",
     "address"
   ],
+  "dependencies": {
+    "request": "2.60.0"
+  },
   "author": "@evonfriedland",
   "license": "GPL-2.0",
   "bugs": {

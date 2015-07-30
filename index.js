@@ -1,18 +1,13 @@
-var request = require("request");
+var YQL = require("yql");
 
-module.exports = mardc;
-
-var mardc = function (search) {
-	var terms = {str: search};
-	var uri = "https://geospatial.dcgis.dc.gov/wsProxy/proxy_LocVerifier.asmx/findLocation_all"
-	request({
-		uri: uri,
-		qs: terms
-	}, function(error,response,body) {
-		try {
-			console.log(body);
-		} catch (err) {
-			console.log("Error thrown!")
+var mardc = function (search, callback) {
+	var query = new YQL("SELECT * FROM xml WHERE url='http://geospatial.dcgis.dc.gov/wsProxy/proxy_LocVerifier.asmx/findLocation_all?str=" + encodeURIComponent(search) + "' AND itemPath='ReturnObject.returnDataset.diffgram.NewDataSet.Table1'")
+	query.exec(function (error, response) {
+		if (error) {
+			callback(error)
 		}
+	    callback(response);
 	});
 };
+
+module.exports = mardc;

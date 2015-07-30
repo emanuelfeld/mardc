@@ -1,0 +1,32 @@
+{
+    "conformsTo": "http://codefordc.org/resources/specification.html",
+    "status": "Alpha",
+    "thumbnailUrl": "",
+    "contact": {
+        "name": "Emanuel Feld",
+        "email": "",
+        "twitter": "@evonfriedland"
+    },
+    "bornAt": "Code for DC",
+    "geography": "Washington, DC",
+    "politicalEntity": {},
+    "governmentPartner": {},
+    "communityPartner": {},
+    "type": "Node.js module",
+    "data": {
+        "http://dcatlas.dcgis.dc.gov/mar/": ""
+    },
+    "needs": [],
+    "categories": [
+        {
+            "category": "GIS"
+        },
+        {
+            "category": "Property"
+        },
+        {
+            "category": "Local Government"
+        }
+    ],
+    "moreInfo": ""
+}

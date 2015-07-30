@@ -8,7 +8,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git://github.com/emanuelfeld/mardc.git"
+    "url": "git+https://github.com/emanuelfeld/mardc.git"
   },
   "keywords": [
     "geocode",

@@ -1,0 +1,34 @@
+<!doctype html>
+<html>
+	<head>
+		
+		<title>mar</title>
+		
+	</head>
+
+	<body style="margin:0 auto">
+		
+	<script>
+
+		function main() {
+			console.log("hello");
+			httpGet("http://citizenatlas.dc.gov/newwebservices/locationverifier.asmx/findAID2?AID=231038&f=json", addressCallback);
+			var addressCallback = function() {
+				console.log("hi");
+				console.log(this);
+			};
+		}
+
+		function httpGet(url, addressCallback) {
+			console.log("boo");
+			var req = new XMLHttpRequest();
+			req.addEventListener("load", addressCallback, false);
+			req.open('GET', url);
+			req.send(null);
+		}			
+
+		window.onload = main;
+
+	</script>
+  	</body>
+</html>

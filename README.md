@@ -2,7 +2,7 @@
 
 # mardc
 
-A node wrapper for querying the DC GIS Master Address Repository. You can use it to search street addresses, intersections, blocks, and place names in Washington, DC. Additional documentation on the MAR is available [here](http://dcatlas.dcgis.dc.gov/mar/search.aspx). 
+A node wrapper for querying the DC GIS Master Address Repository. You can use it to search street addresses, intersections, blocks, and place names in Washington, DC. Additional documentation on the MAR is available [here](http://dcatlas.dcgis.dc.gov/mar/search.aspx).
 
 ### Installation
 

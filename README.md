@@ -14,6 +14,21 @@ A node wrapper for querying the DC GIS Master Address Repository. You can use it
 
 var mardc = require('mardc');
 
+// intersection
+mardc('14th ST NW and Pennsylvania Avenue NW', function (error, data) {
+	// up to you
+});
+
+// block
+mardc('400 Block of 4th St NW', function (error, data) {
+	// up to you
+});
+
+// place name
+mardc('Dupont Circle', function (error, data) {
+	// up to you
+});
+
 // street address
 mardc('1600 Pennsylvania Ave NW', function (error, data) {
 	console.log(data);
@@ -69,25 +84,4 @@ The above code would output:
        IMAGEDIR: 'NO_IMAGE',
        IMAGENAME: 'No_Image_Available.JPG',
        ConfidenceLevel: '100' } ] }
-```
-
-And for some other accepted query formats:
-
-```
-
-// intersection
-mardc('14th ST NW and Pennsylvania Avenue NW', function (error, data) {
-	// up to you
-});
-
-// block
-mardc('400 Block of 4th St NW', function (error, data) {
-	// up to you
-});
-
-// place name
-mardc('Dupont Circle', function (error, data) {
-	// up to you
-});
-
 ```

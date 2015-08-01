@@ -2,7 +2,7 @@
 
 # mardc
 
-A node wrapper for querying the DC GIS Master Address Repository. You can use it to search street addresses, intersections, blocks, and place names in Washington, DC. Additional documentation on the MAR is available [here](http://dcatlas.dcgis.dc.gov/mar/search.aspx).
+A node wrapper for querying the DC GIS Master Address Repository. You can use it to search locations by street address, intersection, block, place name, and MAR address id in Washington, DC. Additional documentation on the MAR and its uses is available [here](http://octo.dc.gov/service/master-address-repository).
 
 ### Installation
 
@@ -29,6 +29,11 @@ mardc('Dupont Circle', function (error, data) {
 	// up to you
 });
 
+// mar address id
+mardc('309368', function (error, data) {
+	// up to you ('309368' is the address id for the library of congress john adams building)
+});
+
 // street address
 mardc('1600 Pennsylvania Ave NW', function (error, data) {
 	console.log(data);
@@ -36,7 +41,7 @@ mardc('1600 Pennsylvania Ave NW', function (error, data) {
 
 ```
 
-The above code would output:
+The street address search request above code would output:
 
 ```
 { results: 

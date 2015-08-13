@@ -151,7 +151,7 @@ function makeList() {
 	//create options for dropdown, from the uploaded file
 	for (var i = 0; i < info.meta.fields.length; i++) {
 		var field_option = new Option(info.meta.fields[i], info.meta.fields[i]);
-		// field_option.attr("class", "option");
+		$(field_option).attr("class", "option");
 		field_list.append($(field_option));
 	}
 
@@ -162,7 +162,6 @@ function makeList() {
 //enable or disable run geocoder button
 function toggleGeocoder() {
 	var geocode_button = $('#geocode_button');
-	console.log($('#field_list'));
 	var selected = $('#field_list option:selected').text();
 	if (selected != "This Column") {
 		geocode_button.removeAttr("disabled");
@@ -196,7 +195,6 @@ function setupGeocoder() {
 		}
 	});
 
-	console.log(selected_fields);
 	gatherAddresses(selected_fields);
 }
 
@@ -212,7 +210,6 @@ function gatherAddresses(s) {
 		address = address.join(" ");						
 		addresses.push(address);
 	}
-	console.log(addresses);
 	iterateRows();
 }
 
@@ -238,9 +235,9 @@ function cleanAddress(address) {
 }
 
 function geocodeRow(i) {
-	console.log(addresses[i]);
 	url = "https://query.yahooapis.com/v1/public/yql?q=SELECT%20*%20FROM%20xml%20WHERE%20url%3D%27http%3A%2F%2Fgeospatial.dcgis.dc.gov%2FwsProxy%2Fproxy_LocVerifier.asmx%2FfindLocation_all%3Fstr%3D" + encodeURIComponent(cleanAddress(addresses[i])) + "%27%20AND%20itemPath%3D%27ReturnObject.returnDataset.diffgram.NewDataSet.Table1'&format=json&diagnostics=true&callback=";
 	$.get(url, function(data) {
+		console.log(data);
 		var result;
 		try {
 			result = data.query.results.Table1;
@@ -256,6 +253,7 @@ function geocodeRow(i) {
 			addMarker(location);
 			console.log("Status: OK; Address: " + addresses[i] + "; Latitude: " + lat + ", Longitude: " + lon + "; Delay: " + delay);
 		} catch (e) {
+			console.log(e);
 			failures++;
 			result = {};
 			lat = 0;

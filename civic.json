@@ -1,9 +1,9 @@
 {
     "conformsTo": "http://codefordc.org/resources/specification.html",
     "status": "Production",
-    "thumbnailUrl": "https://raw.githubusercontent.com/emanuelfeld/geocoder/gh-pages/assets/geocoder_box.png",
+    "thumbnailUrl": "https://raw.githubusercontent.com/emanuelfeld/mardc/gh-pages/assets/geocoder_box.png",
     "contact": {
-        "name": "CSV Geocoder",
+        "name": "DC Master Address Repository Tool",
         "email": "",
         "twitter": "@evonfriedland"
     },
@@ -18,7 +18,8 @@
     "categories": [
         {"category":"Geocoding"},
         {"category":"Geospatial"},
-        {"category":"Maps"}
+        {"category":"Maps"},
+        {"category":"Government"}
     ],
-    "moreInfo": "https://emanuelfeld.github.io/geocoder"
+    "moreInfo": "https://emanuelfeld.github.io/mardc"
 }

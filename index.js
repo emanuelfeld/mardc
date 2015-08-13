@@ -1,5 +1,6 @@
-// var mardc = require('mardc');
 var coordinates = [];
+var coordinate_list = [];
+var result_list = [];
 var lat, lon;
 var info;
 var field_list;
@@ -7,7 +8,7 @@ var field_index = 0;
 var failures = 0;
 var successes = 0;
 var geocoder = new google.maps.Geocoder();
-var delay = 300;
+var delay = 500;
 var addresses = [];
 var output_geojson = [];
 var index = 0;
@@ -15,12 +16,12 @@ var markers = []
 
 
 //listen for data upload. right now only csv/tsv type files. also presumes that file contains headers.
-document.getElementById('files').addEventListener('change', handleFileSelect, false);
-document.getElementById('field_list').addEventListener('change', toggleGeocoder, false);
-document.getElementById('list_button').addEventListener('click', makeList, false);
-document.getElementById('geocode_button').addEventListener('click', setupGeocoder, false);
-document.getElementById('failure_button').addEventListener('click', toggleFailure, false);
-document.getElementById('gist_button').addEventListener('click', postGist, false);
+$('#files').bind("change", handleFileSelect);
+$('#field_list').bind("change", toggleGeocoder);
+$('#list_button').bind("click", makeList);
+$('#geocode_button').bind("click", setupGeocoder);
+$('#failure_button').bind("click", toggleFailure);
+$('#gist_button').bind("click", postGist);
 
 //show or hide the geocoding failure list
 function toggleFailure() {
@@ -35,16 +36,17 @@ function toggleFailure() {
 
 var map;
 
+// Initialize map setup
 function initialize() {
   var mapOptions = {
     zoom: 2,
     maxZoom: 18,
     center: new google.maps.LatLng(51.505, -0.09)
   };
-  map = new google.maps.Map(document.getElementById('map'),
-      mapOptions);
+  map = new google.maps.Map(document.getElementById('map'), mapOptions);
 }
 
+// Add a new marker to the markers array
 function addMarker(location) {
   var marker = new google.maps.Marker({
     position: location,
@@ -71,21 +73,21 @@ function deleteMarkers() {
 
 initialize();
 
-//take in uploaded file
+// Take in uploaded file
 function handleFileSelect(evt) {
 	var files = evt.target.files;
 	var parsed = Papa.parse(files[0], {
 		header: true,
 		complete: function(results) {
 			info = results;
-			var list_button = document.getElementById("list_button");
-			list_button.removeAttribute("disabled");
+			var list_button = $("#list_button");
+			list_button.removeAttr("disabled");
 
 			coordinates = [];
 			field_index = 0;
 			failures = 0;
 			successes = 0;
-		    delay = 300;
+		    delay = 500;
 			addresses = [];
 			index = 0;
 
@@ -101,55 +103,56 @@ function handleFileSelect(evt) {
 		}
 	});
 }
-
 //make the field dropdowns
 function makeList() {
 	console.log("Making list.");
 
 	coordinates = [];
+	coordinate_list = [];
+	result_list = [];
 	failures = 0;
 	successes = 0;
-    delay = 300;
+    delay = 500;
 	addresses = [];
 	index = 0;
 
 	//check if this is the first dropdown or another, and set things up accordingly
-	var list_number = document.createAttribute("list_number");
 	if (field_index === 0) {
-		field_list = document.getElementById('field_list');
-		field_list.removeAttribute("disabled");
-		field_list.setAttribute("list_number",field_index);
+		field_list = $('#field_list');
+		field_list.removeAttr("disabled");
+		field_list.attr("list_number",field_index);
 	} else {
 		//create div for 'additional' dropdown
-		var list_div = document.createElement('div');
-		list_div.setAttribute("class", "additional");
+		var list_div = $('<div/>');
+		list_div.attr("class", "additional");
 
 		//create dropdown select
-		field_list = document.createElement('select');
-		field_list.setAttribute("class","field_list");
-		field_list.setAttribute("list_number",field_index);
+		field_list = $('<select/>');
+		field_list.attr({
+			"class":"field_list",
+			"id":"field_list",
+			"list_number":field_index
+		});
 
 		//put option placeholder 'and this column' to await selection
-		var list_placeholder = document.createElement('option');
+		var list_placeholder = $('<option/>');
 		list_placeholder.selected = "selected";
-		list_placeholder.textContent = "And This Column";
+		list_placeholder.text("And This Column");
 
 		//container
-		var column_select = document.getElementById("column_select");
+		var column_select = $("#column_select");
 
 		//put it all together
-		field_list.appendChild(list_placeholder);
-		column_select.appendChild(list_div);
-		list_div.appendChild(field_list);
+		field_list.append(list_placeholder);
+		column_select.append(list_div);
+		list_div.append(field_list);
 	}
 
 	//create options for dropdown, from the uploaded file
 	for (var i = 0; i < info.meta.fields.length; i++) {
-		var field_option = new Option();
-		field_option.setAttribute("class", "option");
-		field_option.value = info.meta.fields[i];
-		field_option.text = info.meta.fields[i];
-		field_list.options.add(field_option);
+		var field_option = new Option(info.meta.fields[i], info.meta.fields[i]);
+		// field_option.attr("class", "option");
+		field_list.append($(field_option));
 	}
 
 	//increment number of dropdowns
@@ -158,19 +161,20 @@ function makeList() {
 
 //enable or disable run geocoder button
 function toggleGeocoder() {
-	var geocode_button = document.getElementById('geocode_button');
-	var selected = document.getElementById('field_list').selectedOptions[0].text;
+	var geocode_button = $('#geocode_button');
+	console.log($('#field_list'));
+	var selected = $('#field_list option:selected').text();
 	if (selected != "This Column") {
-		geocode_button.removeAttribute("disabled");
+		geocode_button.removeAttr("disabled");
 	} else {
-		geocode_button.setAttribute("disabled", "disabled");
+		geocode_button.attr("disabled", "disabled");
 	}
 }
 
 function setupGeocoder() {
 	failures = 0;
 	successes = 0;
-	// markers.clearLayers();
+
 	deleteMarkers();
 
 	//reset list of failures upon geocoder re-run
@@ -178,8 +182,8 @@ function setupGeocoder() {
 	$("#progress").text("");
 
 	//enable view failure button
-	var failure_button = document.getElementById('failure_button');
-	failure_button.removeAttribute('disabled');
+	var failure_button = $('#failure_button');
+	failure_button.removeAttr('disabled');
 
 	var selected_fields = [];
 	var field_lists = document.getElementsByClassName('field_list');
@@ -192,6 +196,7 @@ function setupGeocoder() {
 		}
 	});
 
+	console.log(selected_fields);
 	gatherAddresses(selected_fields);
 }
 
@@ -207,7 +212,7 @@ function gatherAddresses(s) {
 		address = address.join(" ");						
 		addresses.push(address);
 	}
-
+	console.log(addresses);
 	iterateRows();
 }
 
@@ -227,41 +232,6 @@ function iterateRows() {
 	var interval = setInterval(begin, delay);
 }
 
-var addressCallback = function() {
-	try {
-		var response = JSON.parse(this.responseText);
-		var result = response.query.results.Table1;
-		if (result.length > 0) {
-			result = result[0];
-		}
-		lat = parseFloat(result['LATITUDE']);
-		lon = parseFloat(result['LONGITUDE']);
-		var location = new google.maps.LatLng(lat, lon);
-		addMarker(location);
-		console.log("Status: OK; Address: " + addresses[i] + "; Latitude: " + lat + ", Longitude: " + lon + "; Delay: " + delay);
-		successes++;
-	} catch (e) {
-		lat = 0;
-		lon = 0;
-		console.log("Status: NOT LOCATED; Address: " + addresses[i] + "; Latitude: " + lat + ", Longitude: " + lon + "; Delay: " + delay);
-		failures++;
-	}
-	// var address_info = {
-	// 	'index': index,
-	// 	'latitude': lat,
-	// 	'longitude': lon,
-	// 	'address': addresses[i]
-	// };
-	// collectPoints(address_info);
-};
-
-function httpGet(url, addressCallback) {
-	 var req = new XMLHttpRequest();
-	 req.addEventListener("load", addressCallback, false);
-	 req.open('GET', url);
-	 req.send(null);
-}			
-
 function cleanAddress(address) {
 	address = address.toLowerCase().replace(/[ ]/g,"+");
 	return address;
@@ -270,39 +240,46 @@ function cleanAddress(address) {
 function geocodeRow(i) {
 	console.log(addresses[i]);
 	url = "https://query.yahooapis.com/v1/public/yql?q=SELECT%20*%20FROM%20xml%20WHERE%20url%3D%27http%3A%2F%2Fgeospatial.dcgis.dc.gov%2FwsProxy%2Fproxy_LocVerifier.asmx%2FfindLocation_all%3Fstr%3D" + encodeURIComponent(cleanAddress(addresses[i])) + "%27%20AND%20itemPath%3D%27ReturnObject.returnDataset.diffgram.NewDataSet.Table1'&format=json&diagnostics=true&callback=";
-	console.log(url);
-	httpGet(url, addressCallback);
+	$.get(url, function(data) {
+		var result;
+		try {
+			result = data.query.results.Table1;
+			successes++;
+			if (result.length > 0) {
+				result = result[0];
+			}
+			lat = parseFloat(result['LATITUDE']);
+			lon = parseFloat(result['LONGITUDE']);
+			delete result['LATITUDE'];
+			delete result['LONGITUDE'];
+			var location = new google.maps.LatLng(lat, lon);
+			addMarker(location);
+			console.log("Status: OK; Address: " + addresses[i] + "; Latitude: " + lat + ", Longitude: " + lon + "; Delay: " + delay);
+		} catch (e) {
+			failures++;
+			result = {};
+			lat = 0;
+			lon = 0;
+			console.log("Status: NOT LOCATED; Address: " + addresses[i] + "; Latitude: " + lat + ", Longitude: " + lon + "; Delay: " + delay);
+			$("#failure_list").append("Row " + i +": " + addresses[i] + "<br>");
+		}
+		var address_info = {
+			'index': i,
+			'latitude': lat,
+			'longitude': lon,
+			'address': addresses[i]
+		};
+		var progress = $('#progress');
+		progress.text(successes + " of " + info.data.length + " found and " + failures + " failures");
+		collectPoints(result, address_info);
+	});
 	index++;
-	// mardc(addresses[i], function(error, data) {
-	// 	if (data) {
-	// 		lat = parseFloat(data.results[0]['LATITUDE']);
-	// 		lon = parseFloat(data.results[0]['LONGITUDE']);
-	// 		index++;
-	// 		console.log("Status: OK; Address: " + addresses[i] + "; Latitude: " + lat + ", Longitude: " + lon + "; Delay: " + delay);
-	// 		successes++;
-	// 		var location = new google.maps.LatLng(lat, lon);
-	// 		addMarker(location);
-	// 	} else {
-	// 		lat = 0;
-	// 		lon = 0;
-	// 		index++;
-	// 		console.log("Status: NOT LOCATED; Address: " + addresses[i] + "; Latitude: " + lat + ", Longitude: " + lon + "; Delay: " + delay);
-	// 		failures++;							
-	// 	}
-		var progress = document.getElementById('progress');
-		progress.textContent = successes + " of " + info.data.length + " geocoded and " + failures + " failures";
-
-	// 	collectPoints(address_info);
-	// });
 }
 
 //gather results and format them for file (csv and geojson) output
-function collectPoints(a) {
-	console.log(a);
-	if (a.index === 0) {
-		coordinate_list = [];
-	}
+function collectPoints(r, a) {
 
+	result_list.push(r);
 	coordinate_list.push(a);
 
 	if (coordinate_list.length === info.data.length) {
@@ -315,13 +292,14 @@ function collectPoints(a) {
 				lat_list.push(coordinate_list[i].latitude);
 				lon_list.push(coordinate_list[i].longitude);								
 			};
-			output_csv[i] = jQuery.extend({}, info.data[i], {
+			data = jQuery.extend({}, info.data[i], result_list[i]);
+			output_csv[i] = jQuery.extend({}, data, {
 				'latitude': coordinate_list[i].latitude
 			}, {
 				'longitude': coordinate_list[i].longitude
 			});
 			output_geojson[i] = jQuery.extend({}, {
-				'properties': info.data[i]
+				'properties': data
 			}, {
 				'type': 'Feature',
 				'geometry': {
@@ -330,8 +308,6 @@ function collectPoints(a) {
 				}
 			});
 		}
-
-			// 'crs': {'type': 'EPSG', 'properties': {'code': 4326}},
 
 		output_geojson = {
 			'type': 'FeatureCollection',
@@ -353,39 +329,39 @@ function collectPoints(a) {
 			bounds.extend(min_bounds);
 			bounds.extend(max_bounds);
 			map.fitBounds(bounds);
-			// map.fitBounds([
-			// 	[min_lat, min_lon],
-			// 	[max_lat, max_lon]
-			// ]);							
 		}
 
 		var csv = Papa.unparse(output_csv);
 
 		console.log(csv);
 
-		var geojson = document.getElementById('geojson');
-		geojson.removeAttribute("disabled");
-		geojson.textContent = "";
-		var geojson_link = document.createElement('a');
-		geojson_link.innerHTML = "GeoJSON";
-		geojson_link.href = "data:text/json;charset=utf-8," + encodeURIComponent(output_geojson);
-		geojson_link.target = '_blank';
-		geojson_link.download = "geojson.json";
-		geojson.appendChild(geojson_link);
+		var geojson = $('#geojson');
+		geojson.removeAttr('disabled');
+		geojson.text('');
+		var geojson_link = $('<a/>');
+		geojson_link.html("GeoJSON");
+		geojson_link.attr({
+			'href': 'data:text/json;charset=utf-8,' + encodeURIComponent(output_geojson),
+			'target': '_blank',
+			'download': 'geojson.json'
+		});
+		geojson.append(geojson_link);
 
 
-		var download = document.getElementById('download');
-		download.removeAttribute("disabled");
-		download.textContent = "";
-		var download_link = document.createElement('a');
-		download_link.innerHTML = "CSV";
-		download_link.href = 'data:application/csv;charset=utf-8,' + encodeURIComponent(csv);
-		download_link.target = '_blank';
-		download_link.download = 'geocoded.csv';
-		download.appendChild(download_link);
+		var download = $('#download');
+		download.removeAttr('disabled');
+		download.text('');
+		var download_link = $('<a/>');
+		download_link.html("CSV");
+		download_link.attr({
+			'href': 'data:application/csv;charset=utf-8,' + encodeURIComponent(csv),
+			'target': '_blank',
+			'download': 'geocoded.csv'
+		});
+		download.append(download_link);
 
-		var gist_button = document.getElementById("gist_button");
-		gist_button.removeAttribute("disabled");
+		var gist_button = $("#gist_button");
+		gist_button.removeAttr("disabled");
 
 	}
 }
@@ -407,10 +383,10 @@ function postGist() {
 
   $.post('https://api.github.com/gists', JSON.stringify(data), function(d) {
 
-  	var gist_result = document.getElementById("gist_result");
+  	var gist_result = $("#gist_result");
   	console.log(d.html_url);
-  	gist_result.setAttribute("href", d.html_url);
-  	gist_result.textContent = "Map now accessible here";
+  	gist_result.attr('href', d.html_url);
+  	gist_result.text("Map now accessible here");
   	console.log(d);
   });
 

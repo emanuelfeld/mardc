@@ -7,10 +7,10 @@
 		<meta property="og:site_name" content="mardc" />
 		<meta property="og:description" content="Simple batch master address repository interface." />
 		<meta property="og:type" content="website" />
-		<meta property="og:url" content="https://emanuelfeld.github.io/mardc_decoder" />
-		<meta property="og:image" content="https://emanuelfeld.github.io/mardc_decoder/assets/geocoder_box.png" />
+		<meta property="og:url" content="https://emanuelfeld.github.io/mardc" />
+		<meta property="og:image" content="https://emanuelfeld.github.io/mardc/assets/geocoder_box.png" />
 		
-		<title>mardc</title>
+		<title>DC MAR Tool</title>
 		
 		<link rel="stylesheet" href="stylesheets/index.css">
 		<link rel="stylesheet" href="stylesheets/pygment_trac.css">
@@ -47,20 +47,19 @@
 
 			<div id="instructions"> 
 				<div id="title_box">
-					<div id="title" class="steps">mar dc</div>
-					<div id="subtitle" class="steps"><a href="/mardc_decoder/about" target="_blank">instructions</a> &nbsp <a href="/mardc_decoder/about#contact" target="_blank">contact</a> &nbsp <a href="https://github.com/emanuelfeld/geocoder" target="_blank">code</a></div>
+					<div id="title" class="steps">DC MAR Tool</div>
+					<div id="subtitle" class="steps"><a href="/mardc/about">instructions</a> &nbsp <a href="/mardc/about#contact">contact</a> &nbsp <a href="https://github.com/emanuelfeld/geocoder">code</a></div>
 				</div>
 				<div id="file_select" class="steps">
 					1. Select your file:<br>
 					<input type="file" value="hello" id="files" name="files[]" accept="text/csv,text/tab-separated-values,.txt"/>					
-					<div style="font:11px/normal 'Lucida Grande'; padding-top:10px">No CSV handy? Try it out with <a href="https://raw.githubusercontent.com/emanuelfeld/mardc_decoder/gh-pages/assets/geocoder_test.csv" target="_blank" download="geocoder_test.csv">this one</a>.</div>
+					<div style="font:11px/normal 'Lucida Grande'; padding-top:10px">No CSV handy? Try it out with <a href="https://raw.githubusercontent.com/emanuelfeld/mardc/gh-pages/assets/geocoder_test.csv" target="_blank" download="geocoder_test.csv">this one</a>.</div>
 				</div>
 				<div id="column_select" class="steps">
-					2. Choose column(s):<br>
+					2. Choose location column:<br>
 				<select class="field_list" id="field_list" disabled="disabled">
 					<option selected="selected" disabled="disabled">This Column</option>
 				</select>
-				<button id="list_button" type="submit" disabled="disabled">Add Another</button>				
 				</div>
 				<div id="run_geocoder" class="steps">
 					3. Run the MAR tool:<br>

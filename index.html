@@ -1,34 +1,94 @@
 <!doctype html>
 <html>
 	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="chrome=1">
+		<meta property="og:title" content="mardc" />
+		<meta property="og:site_name" content="mardc" />
+		<meta property="og:description" content="Simple batch master address repository interface." />
+		<meta property="og:type" content="website" />
+		<meta property="og:url" content="https://emanuelfeld.github.io/mardc_decoder" />
+		<meta property="og:image" content="https://emanuelfeld.github.io/mardc_decoder/assets/geocoder_box.png" />
 		
-		<title>mar</title>
+		<title>mardc</title>
 		
+		<link rel="stylesheet" href="stylesheets/index.css">
+		<link rel="stylesheet" href="stylesheets/pygment_trac.css">
+		<link rel="shortcut icon" type="image/x-icon" href="assets/geocoder_box.ico" >
+		<link href='https://fonts.googleapis.com/css?family=Dosis|Abel|Titillium+Web|Roboto+Condensed' rel='stylesheet' type='text/css'>
+
+		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.3/leaflet.css" />
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.3/leaflet.js"></script>
+
+		<meta content="initial-scale=1.0, user-scalable=no" name="viewport">
+		<!--[if lt IE 9]>
+		<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+		<![endif]-->
+		<!-- Go to www.addthis.com/dashboard to customize your tools -->
+		<script src="javascripts/papaparse.min.js"></script>
+		<script src="javascripts/jquery.min.js"></script>
+		<script src="https://maps.googleapis.com/maps/api/js?v=3.exp&signed_in=true"></script>
+		<script type="text/javascript" src="//s7.addthis.com/js/300/addthis_widget.js#pubid=ra-5542e6df2a2e5aa7" async="async"></script>
+		<script>
+		(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+		(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+		m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+		})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+		
+		ga('create', 'UA-61502361-1', 'auto');
+		ga('send', 'pageview');
+		</script>
 	</head>
 
 	<body style="margin:0 auto">
 		
-	<script>
+ <div id="contents">
+ 	<div style="display: table-row">
 
-		function main() {
-			console.log("hello");
-			httpGet("http://citizenatlas.dc.gov/newwebservices/locationverifier.asmx/findAID2?AID=231038&f=json", addressCallback);
-			var addressCallback = function() {
-				console.log("hi");
-				console.log(this);
-			};
-		}
+			<div id="instructions"> 
+				<div id="title_box">
+					<div id="title" class="steps">mar dc</div>
+					<div id="subtitle" class="steps"><a href="/mardc_decoder/about" target="_blank">instructions</a> &nbsp <a href="/mardc_decoder/about#contact" target="_blank">contact</a> &nbsp <a href="https://github.com/emanuelfeld/geocoder" target="_blank">code</a></div>
+				</div>
+				<div id="file_select" class="steps">
+					1. Select your file:<br>
+					<input type="file" value="hello" id="files" name="files[]" accept="text/csv,text/tab-separated-values,.txt"/>					
+					<div style="font:11px/normal 'Lucida Grande'; padding-top:10px">No CSV handy? Try it out with <a href="https://raw.githubusercontent.com/emanuelfeld/mardc_decoder/gh-pages/assets/geocoder_test.csv" target="_blank" download="geocoder_test.csv">this one</a>.</div>
+				</div>
+				<div id="column_select" class="steps">
+					2. Choose column(s):<br>
+				<select class="field_list" id="field_list" disabled="disabled">
+					<option selected="selected" disabled="disabled">This Column</option>
+				</select>
+				<button id="list_button" type="submit" disabled="disabled">Add Another</button>				
+				</div>
+				<div id="run_geocoder" class="steps">
+					3. Run the MAR tool:<br>
+					<button id="geocode_button" type="submit" disabled="disabled">Go!</button>
+					<span id="progress"></span><br>
+					<button id="failure_button" type="submit" disabled="disabled">View Failures</button>
+					<div id="failure_list" style="display: none;"></div>
+				</div>
+				<div id="download_result" class="steps">
+					4. Download the result:<br>
+					<button id="download" type="submit" disabled="disabled">CSV</button><br>
+					<button id="geojson" type="submit" disabled="disabled">GeoJSON</button>
+				</div>
+				<div id="save_gist" class="steps">
+					5. Save the map:<br>
+					<button id="gist_button" type="submit" disabled="disabled">Create Gist</button><br>
+					<div style="font:11px/normal 'Lucida Grande'; padding-top:10px"><a id="gist_result" href="" target="_blank"></a></div>
+				</div>
+			</div>
 
-		function httpGet(url, addressCallback) {
-			console.log("boo");
-			var req = new XMLHttpRequest();
-			req.addEventListener("load", addressCallback, false);
-			req.open('GET', url);
-			req.send(null);
-		}			
+			<div id="map"></div>
+	</div>
 
-		window.onload = main;
+		<script src="index.js"></script>
 
-	</script>
+		<script src="javascripts/scale.fix.js"></script>
+
+		<script type="text/javascript" src="//s7.addthis.com/js/300/addthis_widget.js#pubid=ra-5542e6df2a2e5aa7" async="async"></script>
+
   	</body>
 </html>

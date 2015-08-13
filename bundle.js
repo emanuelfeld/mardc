@@ -1,3 +1,4 @@
+(function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 // var mardc = require('mardc');
 var coordinates = [];
 var lat, lon;
@@ -174,7 +175,7 @@ function setupGeocoder() {
 	deleteMarkers();
 
 	//reset list of failures upon geocoder re-run
-	$("#failure_list").text("");
+	$("#failure_list").text("");	
 	$("#progress").text("");
 
 	//enable view failure button
@@ -228,31 +229,7 @@ function iterateRows() {
 }
 
 var addressCallback = function() {
-	try {
-		var response = JSON.parse(this.responseText);
-		var result = response.query.results.Table1;
-		if (result.length > 0) {
-			result = result[0];
-		}
-		lat = parseFloat(result['LATITUDE']);
-		lon = parseFloat(result['LONGITUDE']);
-		var location = new google.maps.LatLng(lat, lon);
-		addMarker(location);
-		console.log("Status: OK; Address: " + addresses[i] + "; Latitude: " + lat + ", Longitude: " + lon + "; Delay: " + delay);
-		successes++;
-	} catch (e) {
-		lat = 0;
-		lon = 0;
-		console.log("Status: NOT LOCATED; Address: " + addresses[i] + "; Latitude: " + lat + ", Longitude: " + lon + "; Delay: " + delay);
-		failures++;
-	}
-	// var address_info = {
-	// 	'index': index,
-	// 	'latitude': lat,
-	// 	'longitude': lon,
-	// 	'address': addresses[i]
-	// };
-	// collectPoints(address_info);
+	console.log(this.responseText);
 };
 
 function httpGet(url, addressCallback) {
@@ -262,16 +239,10 @@ function httpGet(url, addressCallback) {
 	 req.send(null);
 }			
 
-function cleanAddress(address) {
-	address = address.toLowerCase().replace(/[ ]/g,"+");
-	return address;
-}
 
 function geocodeRow(i) {
 	console.log(addresses[i]);
-	url = "https://query.yahooapis.com/v1/public/yql?q=SELECT%20*%20FROM%20xml%20WHERE%20url%3D%27http%3A%2F%2Fgeospatial.dcgis.dc.gov%2FwsProxy%2Fproxy_LocVerifier.asmx%2FfindLocation_all%3Fstr%3D" + encodeURIComponent(cleanAddress(addresses[i])) + "%27%20AND%20itemPath%3D%27ReturnObject.returnDataset.diffgram.NewDataSet.Table1'&format=json&diagnostics=true&callback=";
-	console.log(url);
-	httpGet(url, addressCallback);
+	url = "https://query.yahooapis.com/v1/public/yql?q=SELECT%20*%20FROM%20xml%20WHERE%20url%3D'http%3A%2F%2Fgeospatial.dcgis.dc.gov%2FwsProxy%2Fproxy_LocVerifier.asmx%2FfindLocation_all%3Fstr%3D" + encodeURIComponent(address[i]) + "'%20AND%20itemPath%3D'ReturnObject.returnDataset.diffgram.NewDataSet.Table1'&diagnostics=true"
 	index++;
 	// mardc(addresses[i], function(error, data) {
 	// 	if (data) {
@@ -289,8 +260,8 @@ function geocodeRow(i) {
 	// 		console.log("Status: NOT LOCATED; Address: " + addresses[i] + "; Latitude: " + lat + ", Longitude: " + lon + "; Delay: " + delay);
 	// 		failures++;							
 	// 	}
-		var progress = document.getElementById('progress');
-		progress.textContent = successes + " of " + info.data.length + " geocoded and " + failures + " failures";
+	// 	var progress = document.getElementById('progress');
+	// 	progress.textContent = successes + " of " + info.data.length + " geocoded and " + failures + " failures";
 
 	// 	collectPoints(address_info);
 	// });
@@ -416,3 +387,5 @@ function postGist() {
 
 }
 
+
+},{}]},{},[1]);

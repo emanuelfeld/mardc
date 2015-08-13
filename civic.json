@@ -1,32 +1,24 @@
 {
     "conformsTo": "http://codefordc.org/resources/specification.html",
-    "status": "Alpha",
-    "thumbnailUrl": "",
+    "status": "Production",
+    "thumbnailUrl": "https://raw.githubusercontent.com/emanuelfeld/geocoder/gh-pages/assets/geocoder_box.png",
     "contact": {
-        "name": "Emanuel Feld",
+        "name": "CSV Geocoder",
         "email": "",
         "twitter": "@evonfriedland"
     },
-    "bornAt": "Code for DC",
-    "geography": "Washington, DC",
+    "bornAt": "",
+    "geography": "Global",
     "politicalEntity": {},
     "governmentPartner": {},
     "communityPartner": {},
-    "type": "Node.js module",
-    "data": {
-        "http://dcatlas.dcgis.dc.gov/mar/": ""
-    },
+    "type": "Web App",
+    "data": {},
     "needs": [],
     "categories": [
-        {
-            "category": "GIS"
-        },
-        {
-            "category": "Property"
-        },
-        {
-            "category": "Local Government"
-        }
+        {"category":"Geocoding"},
+        {"category":"Geospatial"},
+        {"category":"Maps"}
     ],
-    "moreInfo": ""
+    "moreInfo": "https://emanuelfeld.github.io/geocoder"
 }

@@ -1,6 +1,6 @@
 var coordinates = [];
-var coordinate_list = [];
-var result_list = [];
+var coordinate_list = {};
+var result_list = {};
 var lat, lon;
 var info;
 var field_list;
@@ -108,8 +108,8 @@ function makeList() {
 	console.log("Making list.");
 
 	coordinates = [];
-	coordinate_list = [];
-	result_list = [];
+	coordinate_list = {};
+	result_list = {};
 	failures = 0;
 	successes = 0;
     delay = 500;
@@ -276,11 +276,12 @@ function geocodeRow(i) {
 
 //gather results and format them for file (csv and geojson) output
 function collectPoints(r, a) {
-
-	result_list.push(r);
-	coordinate_list.push(a);
-
-	if (coordinate_list.length === info.data.length) {
+	console.log(r)
+	console.log(a)
+	result_list[a.index] = r;
+	coordinate_list[a.index] = a;
+	
+	if (Object.keys(coordinate_list).length === info.data.length) {
 		var lat_list = [];
 		var lon_list = [];
 		var output_csv = [];

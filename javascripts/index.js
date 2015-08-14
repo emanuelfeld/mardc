@@ -13,7 +13,6 @@ var delay = 500;
 var markers = [];
 var map;
 
-
 ///////////////
 /* LISTENERS */
 ///////////////
@@ -31,9 +30,9 @@ var map;
 	// Initialize map setup
 	function initialize() {
 	  var mapOptions = {
-	    zoom: 2,
-	    maxZoom: 18,
-	    center: new google.maps.LatLng(51.505, -0.09)
+		zoom: 2,
+		maxZoom: 18,
+		center: new google.maps.LatLng(51.505, -0.09)
 	  };
 	  map = new google.maps.Map(document.getElementById('map'), mapOptions);
 	}
@@ -41,8 +40,8 @@ var map;
 	// Add a new marker to the markers array
 	function addMarker(location) {
 	  var marker = new google.maps.Marker({
-	    position: location,
-	    map: map
+		position: location,
+		map: map
 	  });
 	  markers.push(marker);
 	}
@@ -50,7 +49,7 @@ var map;
 	// Sets the map on all markers in the array.
 	function setAllMap(map) {
 	  for (var i = 0; i < markers.length; i++) {
-	    markers[i].setMap(map);
+		markers[i].setMap(map);
 	  }
 	}
 
@@ -76,11 +75,10 @@ var map;
 			header: true,
 			complete: function(results) {
 				console.log('Uploading file.')
-				info = results;		
-
+				info = results;
 				// reset column selection options	
 				$('.option').remove();
-				
+
 				makeList();
 				toggleMAR();
 			}
@@ -111,11 +109,11 @@ var map;
 	//show or hide the MAR failure list
 	function toggleFailure() {
 		if ($('#failure_list').attr('style') === 'display: none;') {
-	        $('#failure_list').attr('style', 'margin-top:10px; display: block; height:120px; width:100%; border:none; overflow:auto;');
-	        $('#failure_button').text('Hide Failures');			    		
+			$('#failure_list').attr('style', 'margin-top:10px; display: block; height:120px; width:100%; border:none; overflow:auto;');
+			$('#failure_button').text('Hide Failures');
 		} else {
-	        $('#failure_list').attr('style', 'display: none;');
-	        $('#failure_button').text('Show Failures');			    					    		
+			$('#failure_list').attr('style', 'display: none;');
+			$('#failure_button').text('Show Failures');
 		}
 	}
 
@@ -180,7 +178,7 @@ var map;
 
 	function geocodeRow(i) {
 		url = "https://query.yahooapis.com/v1/public/yql?q=SELECT%20*%20FROM%20xml%20WHERE%20url%3D%27http%3A%2F%2Fgeospatial.dcgis.dc.gov%2FwsProxy%2Fproxy_LocVerifier.asmx%2FfindLocation_all%3Fstr%3D" + encodeURIComponent(cleanAddress(locations[i])) + "%27%20AND%20itemPath%3D%27ReturnObject.returnDataset.diffgram.NewDataSet.Table1'&format=json&diagnostics=true&callback=";
-		
+
 		$.get(url, function(data) {
 			console.log(data);
 			var result, lat, lon;
@@ -196,25 +194,25 @@ var map;
 
 				lat = parseFloat(result['LATITUDE']);
 				lon = parseFloat(result['LONGITUDE']);
-				
+
 				delete result['LATITUDE'];
 				delete result['LONGITUDE'];
-				
+
 				// add point to markers layer
 				var location = new google.maps.LatLng(lat, lon);
 				addMarker(location);
-				
+
 				console.log('Status: OK; Address: ' + locations[i] + '; Latitude: ' + lat + ', Longitude: ' + lon + '; Delay: ' + delay);
 			} catch (e) {
 				console.log(e);
 				failure_count++;
 
 				result = {};
-				
+
 				// set coordinates to (0, 0) if not found to prevent error in geoJSON
 				lat = 0;
 				lon = 0;
-				
+
 				console.log('Status: NOT LOCATED; Address: ' + locations[i] + '; Latitude: ' + lat + ', Longitude: ' + lon + '; Delay: ' + delay);
 				$('#failure_list').append('Row ' + i +': ' + locations[i] + '<br>');
 			}
@@ -228,7 +226,7 @@ var map;
 
 			var progress = $('#progress');
 			progress.text(success_count + ' of ' + info.data.length + ' found and ' + failure_count + ' failure_count');
-			
+
 			collectPoints(result, location_info);
 		});
 
@@ -255,7 +253,7 @@ var map;
 				// add non-(0, 0) coordinates to lists to zoom map to points
 				if (!(coordinates[i].latitude === 0 & coordinates[i].longitude === 0)) {
 					lat_list.push(coordinates[i].latitude);
-					lon_list.push(coordinates[i].longitude);								
+					lon_list.push(coordinates[i].longitude);
 				};
 
 				// combine original file data with returned (non-geocoordinate) MAR data
@@ -351,9 +349,9 @@ var map;
 		  'description': description,
 		  'public': true,
 		  'files': {
-		    'map.json': {
-		      'content': output_geojson
-		    }
+			'map.json': {
+			  'content': output_geojson
+			}
 		  }
 		}
 
@@ -367,4 +365,3 @@ var map;
 	  });
 
 	}
-

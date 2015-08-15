@@ -85,7 +85,7 @@ var map;
 		});
 	}
 
-	//make the field dropdowns
+	// make the field dropdowns
 	function makeList() {
 		console.log('Making list.');
 
@@ -106,7 +106,7 @@ var map;
 		}
 	}
 
-	//show or hide the MAR failure list
+	// show or hide the MAR failure list
 	function toggleFailure() {
 		if ($('#failure_list').attr('style') === 'display: none;') {
 			$('#failure_list').attr('style', 'margin-top:10px; display: block; height:120px; width:100%; border:none; overflow:auto;');
@@ -117,7 +117,7 @@ var map;
 		}
 	}
 
-	//enable or disable run geocoder button
+	// enable or disable run MAR button
 	function toggleMAR() {
 		coordinates = {};
 		results = {};

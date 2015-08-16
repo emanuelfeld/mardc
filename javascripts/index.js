@@ -1,4 +1,5 @@
 var info
+var fields = []
 var coordinates = {}
 var results = {}
 var failure_count = 0
@@ -238,16 +239,41 @@ function geocodeRow (i) {
 /* DATA COLLECTION AND FORMATTING */
 ////////////////////////////////////
 
+function collectFields (r) {
+  a = Object.keys(r)
+  if (!(fields.some(function (b) { return _.isEqual(a, b)}))) {
+    fields.push(a)
+  }
+}
+
+function gatherFields (F) {
+  var G = _.reduce(F, function(a, b) { return a.concat(b); }, []);
+  return _.uniq(G)
+}
+
+function arrayToDict (A) {
+  A_dict = {}
+  for (a in A) {
+    A_dict[A[a]] = null
+  }
+  return A_dict
+}
+
 // Gather results and format them for file (csv and geojson) output
 function collectPoints (r, a) {
+  collectFields(r)
   results[a.index] = r
   coordinates[a.index] = a
 
   if (Object.keys(coordinates).length === info.data.length) {
+
+    var all_fields = gatherFields(fields);
     var lat_list = []
     var lon_list = []
     output_csv = []
     output_geojson = []
+
+    output_csv[0] = jQuery.extend({}, arrayToDict(Object.keys(info.data[0])), {'latitude': null}, {'longitude': null}, arrayToDict(all_fields));
 
     for (var i = 0; i < info.data.length; i++) {
 
@@ -261,11 +287,11 @@ function collectPoints (r, a) {
       var data = jQuery.extend({}, info.data[i], results[i])
 
       // create object for location, ready for CSV-ification
-      output_csv[i] = jQuery.extend({}, data, {
+      output_csv[i+1] = jQuery.extend({}, info.data[i], {
         'latitude': coordinates[i].latitude
       }, {
         'longitude': coordinates[i].longitude
-      })
+      }, results[i])
 
       // create geoJSON feature for location
       output_geojson[i] = jQuery.extend({}, {
@@ -296,7 +322,8 @@ function collectPoints (r, a) {
 
     // Turn JS object into CSV format
     var csv = Papa.unparse(output_csv)
-    // console.log(csv)
+    encoded_csv = encodeURIComponent(csv).replace(/%0D%0A(%2C)+%0D/,'%0D')
+    console.log(csv)
 
     // Wrap geoJSON features in FeatureCollection
     output_geojson = {
@@ -305,7 +332,7 @@ function collectPoints (r, a) {
     }
 
     output_geojson = JSON.stringify(output_geojson, null, '\t')
-    // console.log(output_geojson)
+    console.log(output_geojson)
 
     // Enable CSV download link
     var download = $('#download')
@@ -314,7 +341,7 @@ function collectPoints (r, a) {
     var download_link = $('<a/>')
     download_link.html('CSV')
     download_link.attr({
-      'href': 'data:application/csvcharset=utf-8,' + encodeURIComponent(csv),
+      'href': 'data:application/csvcharset=utf-8,' + encoded_csv,
       'target': '_blank',
       'download': 'dcmar.csv'
     })

@@ -31,9 +31,9 @@ $('#gist_button').bind('click', postGist)
 // Initialize map setup
 function initialize () {
   var mapOptions = {
-    zoom: 2,
+    zoom: 12,
     maxZoom: 18,
-    center: new google.maps.LatLng(51.505, -0.09)
+    center: new google.maps.LatLng(38.8993488, -77.0145665)
   }
 
   map = new google.maps.Map(document.getElementById('map'), mapOptions)

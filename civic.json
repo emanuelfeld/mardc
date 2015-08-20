@@ -1,9 +1,9 @@
 {
     "conformsTo": "http://codefordc.org/resources/specification.html",
     "status": "Production",
-    "thumbnailUrl": "https://raw.githubusercontent.com/emanuelfeld/mardc/gh-pages/assets/geocoder_box.png",
+    "thumbnailUrl": "https://raw.githubusercontent.com/emanuelfeld/mardc/gh-pages/assets/mardc_box.png",
     "contact": {
-        "name": "DC Master Address Repository Tool",
+        "name": "DC Master Address Repository Query Tool",
         "email": "",
         "twitter": "@evonfriedland"
     },
@@ -14,7 +14,7 @@
     "communityPartner": {},
     "type": "Web App",
     "data": {},
-    "needs": [],
+    "needs": ["Help getting the word out"],
     "categories": [
         {"category":"Geocoding"},
         {"category":"Geospatial"},

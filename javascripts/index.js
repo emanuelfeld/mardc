@@ -10,7 +10,7 @@ var index = 0
 var output_csv = []
 var output_geojson = []
 
-var delay = 500
+var delay = 100
 var markers = []
 var map
 

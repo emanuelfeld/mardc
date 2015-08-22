@@ -4,7 +4,6 @@
     display: table;
 }
 
-
 #title_box {
     background-color: #BF1E24;        
     padding:10px 90px 10px 0px;
@@ -39,6 +38,10 @@
 }
 
 #progress {
+    font:11px/normal 'Lucida Grande';;
+}
+
+#gist {
     font:11px/normal 'Lucida Grande';;
 }
 
@@ -81,7 +84,6 @@
     z-index: 1000;
 }
 
-
 #map {
     height:100%;
     width:65%;
@@ -115,4 +117,3 @@ html,body {
 a {
     text-decoration: none;
 }
-

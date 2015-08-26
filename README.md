@@ -1,6 +1,6 @@
 # mardc
 
-A simple web interface for batch querying the DC Master Address Repository.
+A simple web interface for batch querying the DC Master Address Repository. Geocode locations in DC (street addresses, blocks, intersections, place names, AIDs) and get a whole lot of other relevant info (e.g. Ward, residence type, etc.) for free and fast (~500 queries/minute at the moment).
 
 ##License and Contributing##
 

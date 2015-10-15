@@ -227,7 +227,7 @@ function geocodeRow (i) {
     }
 
     var progress = $('#progress')
-    progress.text(success_count + ' of ' + info.data.length + ' found and ' + failure_count + ' failure_count')
+    progress.text(success_count + ' of ' + info.data.length + ' found and ' + failure_count + ' failures')
 
     collectPoints(result, location_info)
   })

@@ -175,7 +175,10 @@ function iterateRows () {
 }
 
 function cleanAddress (location) {
-  return location.toLowerCase().replace(/[ ]/g, '+')
+  if (location) {
+    return location.toLowerCase().replace(/[ ]/g, '+')
+  }
+  return ''
 }
 
 function geocodeRow (i) {

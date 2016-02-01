@@ -1,25 +1,36 @@
 {
-    "conformsTo": "http://codefordc.org/resources/specification.html",
-    "status": "Production",
-    "thumbnailUrl": "https://raw.githubusercontent.com/emanuelfeld/mardc/gh-pages/assets/mardc_box.png",
+    "name": "DC Geocoder+", 
+    "description": "Batch process locations in DC to get relevant geographic info: geo-coordinates, ward, ANC, residence type, etc. Uses the DC Master Address Repository.", 
+    "license": "GPL-2.0", 
+    "status": "Production", 
+    "type": "Web App", 
+    "homepage": "http://emanuelfeld.github.io/mardc", 
+    "repository": "https://github.com/emanuelfeld/mardc", 
+    "thumbnail": "https://raw.githubusercontent.com/emanuelfeld/mardc/gh-pages/assets/mardc_box.png", 
+    "geography": [
+        "Global"
+    ], 
     "contact": {
-        "name": "DC Master Address Repository Query Tool",
-        "email": "",
-        "twitter": "@evonfriedland"
-    },
-    "bornAt": "",
-    "geography": "Global",
-    "politicalEntity": {},
-    "governmentPartner": {},
-    "communityPartner": {},
-    "type": "Web App",
-    "data": {},
-    "needs": ["Help getting the word out"],
-    "categories": [
-        {"category":"Geocoding"},
-        {"category":"Geospatial"},
-        {"category":"Maps"},
-        {"category":"Government"}
-    ],
-    "moreInfo": "https://emanuelfeld.github.io/mardc"
+        "name": "DC Master Address Repository Query Tool", 
+        "email": "", 
+        "url": "https://twitter.com/@evonfriedland"
+    }, 
+    "partners": [
+        {
+            "url": "http://codefordc.org", 
+            "name": "Code for DC", 
+            "email": ""
+        }
+    ], 
+    "data": [], 
+    "tags": [
+        "Geocoding", 
+        "Geospatial", 
+        "Maps", 
+        "Government"
+    ], 
+    "links": [
+        "https://emanuelfeld.github.io/mardc"
+    ], 
+    "id": "https://raw.githubusercontent.com/DCgov/civic.json/master/schemas/schema-v1.json"
 }

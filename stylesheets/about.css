@@ -1,4 +1,4 @@
-@import url(https://fonts.googleapis.com/css?family=Lato:300italic,700italic,300,700);
+@import url(https://fonts.googleapis.com/css?family=Lato:300,700);
 
 body {
   font:16px/1.5 Lato, "Helvetica Neue", Helvetica, Arial, sans-serif;
@@ -6,11 +6,11 @@ body {
   font-weight:300;
 }
 
-#title_text {
+#titleText {
   padding:20px 0 0 0;
 }
 
-#status_chart {
+#statusChart {
   margin:0 0 20px;
 }
 

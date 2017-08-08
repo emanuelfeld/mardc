@@ -1,397 +1,359 @@
-var info
-var fields = []
-var coordinates = {}
-var results = {}
-var failure_count = 0
-var success_count = 0
-var locations = []
-var index = 0
+'use strict';
 
-var output_csv = []
-var output_geojson = []
-
-var delay = 100
-var markers = []
-var map
-
-///////////////
-/* LISTENERS */
-///////////////
-
-$('#files').bind('change', handleFileSelect)
-$('#field_list').bind('change', toggleMAR)
-$('#geocode_button').bind('click', runMAR)
-$('#failure_button').bind('click', toggleFailure)
-$('#gist_button').bind('click', postGist)
-
-///////////////////////
-/* MAPPING FUNCTIONS */
-///////////////////////
-
-// Initialize map setup
-function initialize () {
-  var mapOptions = {
-    zoom: 12,
-    maxZoom: 18,
-    center: new google.maps.LatLng(38.8993488, -77.0145665)
-  }
-
-  map = new google.maps.Map(document.getElementById('map'), mapOptions)
-}
-
-// Add a new marker to the markers array
-function addMarker (location) {
-  var marker = new google.maps.Marker({
-    position: location,
-    map: map
-  })
-  markers.push(marker)
-}
-
-// Sets the map on all markers in the array.
-function setAllMap (map) {
-  for (var i = 0; i < markers.length; i++) {
-    markers[i].setMap(map)
-  }
-}
-
-function clearMarkers () {
-  setAllMap(null)
-}
-
-function deleteMarkers () {
-  clearMarkers()
-  markers = []
-}
-
-initialize()
-
-//////////////////////////
-/* FILE HANDLING AND UI */
-//////////////////////////
-
-// Take in uploaded file
-function handleFileSelect (evt) {
-  var files = evt.target.files
-  Papa.parse(files[0], {
-    header: true,
-    complete: function(results) {
-      console.log('Uploading file.')
-      info = results
-      // reset column selection options  
-      $('.option').remove()
-
-      makeList()
-      toggleMAR()
-    }
-  })
-}
-
-// Make the field dropdowns
-function makeList () {
-  console.log('Making list.')
-
-  coordinates = {}
-  results = {}
-  failure_count = 0
-  success_count = 0
-  locations = []
-  index = 0
-
-  $('#field_list').removeAttr('disabled')
-
-  //create options for dropdown, from the uploaded file
-  for (var i = 0; i < info.meta.fields.length; i++) {
-    var field_option = new Option(info.meta.fields[i], info.meta.fields[i])
-    $(field_option).attr('class', 'option')
-    $('#field_list').append($(field_option))
-  }
-}
-
-// Show or hide the MAR failure list
-function toggleFailure () {
-  if ($('#failure_list').attr('style') === 'display: none') {
-    $('#failure_list').attr('style', 'margin-top:10px display: block height:120px width:100% border:none overflow:auto')
-    $('#failure_button').text('Hide Failures')
-  } else {
-    $('#failure_list').attr('style', 'display: none')
-    $('#failure_button').text('Show Failures')
-  }
-}
-
-// Enable or disable run MAR button
-function toggleMAR () {
-  coordinates = {}
-  results = {}
-
-  var geocode_button = $('#geocode_button')
-  var selected = $('#field_list option:selected').text()
-  if (selected !== 'This Column') {
-    geocode_button.removeAttr('disabled')
-  } else {
-    geocode_button.attr('disabled', 'disabled')
-  }
-}
-
-//////////////////////
-/* DATA ACQUISITION */
-//////////////////////
-
-function runMAR () {
-  failure_count = 0
-  success_count = 0
-
-  deleteMarkers()
-
-  // Reset list of failure_count upon geocoder re-run
-  $('#failure_list').text('')
-  $('#progress').text('')
-
-  // Enable view failure button
-  var failure_button = $('#failure_button')
-  failure_button.removeAttr('disabled')
-
-  // Determine location column name
-  var selected = $('#field_list option:selected').text()
-
-  locations = info.data.map(function (row) { return row[selected] })
-
-  iterateRows()
-}
-
-// Send each row to be queried in MAR
-function iterateRows () {
-  index = 0
-
-  var begin = function () {
-    clearInterval(interval)
-    if (index < info.data.length) {
-      geocodeRow(index)
-      interval = setInterval(begin, delay)
-    }
-  }
-
-  var interval = setInterval(begin, delay)
-}
-
-function cleanAddress (location) {
-  if (location) {
-    return location.toLowerCase().replace(/[ ]/g, '+')
-  }
-  return ''
-}
-
-function geocodeRow (i) {
-  var url = "https://query.yahooapis.com/v1/public/yql?q=SELECT%20*%20FROM%20xml%20WHERE%20url%3D%27http%3A%2F%2Fgeospatial.dcgis.dc.gov%2FwsProxy%2Fproxy_LocVerifier.asmx%2FfindLocation_all%3Fstr%3D" + encodeURIComponent(cleanAddress(locations[i])) + "%27%20AND%20itemPath%3D%27ReturnObject.returnDataset.diffgram.NewDataSet.Table1'&format=json&diagnostics=true&callback="
-
-  $.get(url, function (data) {
-    console.log(data)
-    var result, lat, lon
-
-    try {
-      result = data.query.results.Table1
-      success_count++
-
-      // take the first (highest confidence) result if more than one returned
-      if (result.length > 0) {
-        result = result[0]
-      }
-
-      lat = parseFloat(result['LATITUDE'])
-      lon = parseFloat(result['LONGITUDE'])
-
-      delete result['LATITUDE']
-      delete result['LONGITUDE']
-
-      // add point to markers layer
-      var location = new google.maps.LatLng(lat, lon)
-      addMarker(location)
-
-      console.log('Status: OK Address: ' + locations[i] + ' Latitude: ' + lat + ', Longitude: ' + lon + ' Delay: ' + delay)
-    } catch (e) {
-      console.log(e)
-      failure_count++
-
-      result = {}
-
-      // Set coordinates to (0, 0) if not found to prevent error in geoJSON
-      lat = 0
-      lon = 0
-
-      console.log('Status: NOT LOCATED Address: ' + locations[i] + ' Latitude: ' + lat + ', Longitude: ' + lon + ' Delay: ' + delay)
-      $('#failure_list').append('Row ' + i + ': ' + locations[i] + '<br>')
+(function () {
+  var App = function (map) {
+    this.mapOptions = {
+      zoom: 12,
+      maxZoom: 18,
+      center: new google.maps.LatLng(38.8993488, -77.0145665)
     }
 
-    var location_info = {
-      'index': i,
-      'latitude': lat,
-      'longitude': lon,
-      'location': locations[i]
-    }
+    this.map = new google.maps.Map(document.getElementById('map'), this.mapOptions)
+    this.markers = []
 
-    var progress = $('#progress')
-    progress.text(success_count + ' of ' + info.data.length + ' found and ' + failure_count + ' failures')
+    this.geocoder = new Geocoder(this, this.map)
+    this.rowCount = 0
+    this.failureCount = 0
+    this.successCount = 0
+    this.processedCount = 0
 
-    collectPoints(result, location_info)
-  })
-
-  index++
-}
-
-////////////////////////////////////
-/* DATA COLLECTION AND FORMATTING */
-////////////////////////////////////
-
-function collectFields (r) {
-  a = Object.keys(r)
-  if (!(fields.some(function (b) { return _.isEqual(a, b)}))) {
-    fields.push(a)
+    this.inputButton = $('#files')
+    this.fieldMenu = $('#fieldMenu')
+    this.geocodeButton = $('#geocodeButton')
+    this.failureButton = $('#failureButton')
+    this.csvButton = $('#csvButton')
+    this.geojsonButton = $('#geojsonButton')
+    this.gistButton = $('#gistButton')
+    this.failures = $('#failures')
+    this.progress = $('#progress')
   }
-}
 
-function gatherFields (F) {
-  var G = _.reduce(F, function(a, b) { return a.concat(b); }, []);
-  return _.uniq(G)
-}
+  App.prototype = {
+    reset: function () {
+      this.failureCount = 0
+      this.successCount = 0
+      this.processedCount = 0
 
-function arrayToDict (A) {
-  A_dict = {}
-  for (a in A) {
-    A_dict[A[a]] = null
-  }
-  return A_dict
-}
+      this.failures.text('')
+      this.progress.text('')
+      this.clearMarkers()
 
-// Gather results and format them for file (csv and geojson) output
-function collectPoints (r, a) {
-  collectFields(r)
-  results[a.index] = r
-  coordinates[a.index] = a
+      this.geocoder.reset()
 
-  if (Object.keys(coordinates).length === info.data.length) {
+      $('#gistResult').text('')
+      this.gistButton.removeClass('hidden')
+      this.gistButton.attr('disabled', 'disabled')
+      this.csvButton.attr('disabled', 'disabled')
+      this.csvButton.text('CSV')
+      this.geojsonButton.attr('disabled', 'disabled')
+      this.geojsonButton.text('GeoJSON')
+      this.failureButton.attr('disabled', 'disabled')
+      this.geocodeButton.removeAttr('disabled')
+    },
 
-    var all_fields = gatherFields(fields);
-    var lat_list = []
-    var lon_list = []
-    output_csv = []
-    output_geojson = []
+    loadFile: function (event) {
+      let file = event.target.files[0]
+      let self = this
 
-    output_csv[0] = jQuery.extend({}, arrayToDict(Object.keys(info.data[0])), {'latitude': null}, {'longitude': null}, arrayToDict(all_fields));
-
-    for (var i = 0; i < info.data.length; i++) {
-
-      // add non-(0, 0) coordinates to lists to zoom map to points
-      if (!(coordinates[i].latitude === 0 & coordinates[i].longitude === 0)) {
-        lat_list.push(coordinates[i].latitude)
-        lon_list.push(coordinates[i].longitude)
-      }
-
-      // combine original file data with returned (non-geocoordinate) MAR data
-      var data = jQuery.extend({}, info.data[i], results[i])
-
-      // create object for location, ready for CSV-ification
-      output_csv[i+1] = jQuery.extend({}, info.data[i], {
-        'latitude': coordinates[i].latitude
-      }, {
-        'longitude': coordinates[i].longitude
-      }, results[i])
-
-      // create geoJSON feature for location
-      output_geojson[i] = jQuery.extend({}, {
-        'properties': data
-      }, {
-        'type': 'Feature',
-        'geometry': {
-          'type': 'Point',
-          'coordinates': [coordinates[i].longitude, coordinates[i].latitude]
+      Papa.parse(file, {
+        header: true,
+        complete: function (res) {
+          self.reset()
+          self.rowCount = res.data.length
+          self.geocoder.input = res.data
+          self.geocoder.output = new Array(self.rowCount)
+          self.geocoder.fields = new Set(res.meta.fields)
+          self.populateFields(res.meta.fields)
         }
       })
-    }
+    },
 
-    // Zoom to marker extent
-    if (lat_list.length > 0) {
-      var min_lat = Math.min.apply(Math, lat_list)
-      var max_lat = Math.max.apply(Math, lat_list)
-      var min_lon = Math.min.apply(Math, lon_list)
-      var max_lon = Math.max.apply(Math, lon_list)
+    addFailure: function (data) {
+      this.failures.append('Row ' + data.row + ': ' + data.text + '<br>')
+    },
 
-      var bounds = new google.maps.LatLngBounds()
-      var min_bounds = new google.maps.LatLng(min_lat, min_lon)
-      var max_bounds = new google.maps.LatLng(max_lat, max_lon)
-      bounds.extend(min_bounds)
-      bounds.extend(max_bounds)
-      map.fitBounds(bounds)
-    }
+    toggleFailures: function () {
+      console.log('toggling')
+      if (this.failures.hasClass('hidden')) {
+        this.failureButton.text('Hide Failures')
+      } else {
+        this.failureButton.text('View Failures')
+      }
+      this.failures.toggleClass('hidden')
+    },
 
-    // Turn JS object into CSV format
-    var csv = Papa.unparse(output_csv)
-    encoded_csv = encodeURIComponent(csv).replace(/%0D%0A(%2C)+%0D/,'%0D')
-    console.log(csv)
+    makeFeature: function (data) {
+      let geometry = {
+        'type': 'Point',
+        'coordinates': [data.longitude, data.latitude]
+      }
 
-    // Wrap geoJSON features in FeatureCollection
-    output_geojson = {
-      'type': 'FeatureCollection',
-      'features': output_geojson
-    }
+      let properties = Object.assign({}, data)
+      delete properties.latitude
+      delete properties.longitude
 
-    output_geojson = JSON.stringify(output_geojson, null, '\t')
-    console.log(output_geojson)
+      return {
+        'type': 'Feature',
+        'properties': properties,
+        'geometry': geometry
+      }
+    },
 
-    // Enable CSV download link
-    var download = $('#download')
-    download.removeAttr('disabled')
-    download.text('')
-    var download_link = $('<a/>')
-    download_link.html('CSV')
-    download_link.attr({
-      'href': 'data:application/csvcharset=utf-8,' + encoded_csv,
-      'target': '_blank',
-      'download': 'dcmar.csv'
-    })
-    download.append(download_link)
+    makeCSV: function (arr) {
+      let rowDefault = {}
+      for (let i = 0; i < this.geocoder.fields.length; i++) {
+        let field = this.geocoder.fields[i]
+        rowDefault[field] = ''
+      }
 
-    // Enable geoJSON download link
-    var geojson = $('#geojson')
-    geojson.removeAttr('disabled')
-    geojson.text('')
-    var geojson_link = $('<a/>')
-    geojson_link.html('GeoJSON')
-    geojson_link.attr({
-      'href': 'data:text/jsoncharset=utf-8,' + encodeURIComponent(output_geojson),
-      'target': '_blank',
-      'download': 'dcmar.json'
-    })
-    geojson.append(geojson_link)
+      this.csv = []
+      for (let i = 0; i < arr.length; i++) {
+        let row = arr[i]
+        let rowFields = new Set(Object.keys(row))
+        if (rowFields !== this.geocoder.fields) {
+          row = Object.assign({}, rowDefault, row)
+        }
+        this.csv.push(row)
+      }
 
-    // Enable geoJSON-to-Gist button for easy map sharing 
-    var gist_button = $('#gist_button')
-    gist_button.removeAttr('disabled')
+      this.csv = Papa.unparse(this.csv)
+      this.csv = encodeURIComponent(this.csv).replace(/%0D%0A(%2C)+%0D/, '%0D')
 
-  }
-}
+      this.csvButton.removeAttr('disabled')
+      this.csvButton.text('')
+      let csvLink = $('<a/>')
+      csvLink.html('CSV')
+      csvLink.attr({
+        'href': 'data:application/csvcharset=utf-8,' + this.csv,
+        'target': '_blank',
+        'download': 'dcmar.csv'
+      })
+      this.csvButton.append(csvLink) 
+    },
 
-// Post geoJSON to GitHub Gist
-function postGist () {
+    makeGeoJSON: function (arr) {
+      let features = []
+      for (let i = 0; i < arr.length; i++) {
+        if (arr[i]) {
+          features.push(this.makeFeature(arr[i]))
+        }
+      }
 
-  var description = 'Map from DC MAR tool on ' + Date.now()
+      this.geojson = JSON.stringify({
+        'type': 'FeatureCollection',
+        'features': features
+      }, null, '\t')
 
-  var data = {
-    'description': description,
-    'public': true,
-    'files': {
-      'map.json': {
-        'content': output_geojson
+      this.geojsonButton.removeAttr('disabled')
+      this.geojsonButton.text('')
+      let geojsonLink = $('<a/>')
+      geojsonLink.html('GeoJSON')
+      geojsonLink.attr({
+        'href': 'data:text/jsoncharset=utf-8,' + encodeURIComponent(this.geojson),
+        'target': '_blank',
+        'download': 'dcmar.json'
+      })
+      this.geojsonButton.append(geojsonLink)
+
+      this.gistButton.removeAttr('disabled')
+    },
+
+    postGist: function () {
+      let fileDescription = 'Map generated by DC MAR tool on ' + Date.now()
+
+      let data = {
+        'description': fileDescription,
+        'public': true,
+        'files': {
+          'map.json': {
+            'content': this.geojson
+          }
+        }
+      }
+
+      let apiURL = 'https://api.github.com/gists'
+      let self = this
+      $.post(apiURL, JSON.stringify(data), function (res) {
+        let gistResult = $('#gistResult')
+        gistResult.attr('href', res.html_url)
+        gistResult.text('Click here to view shareable map')
+        self.gistButton.addClass('hidden')
+      })
+    },
+
+    populateFields: function (fields) {
+      $('.option').remove()
+      for (let i = 0; i < fields.length; i++) {
+        let field = new Option(fields[i], fields[i])
+        $(field).attr('class', 'option')
+        this.fieldMenu.append($(field))
+      }
+      this.fieldMenu.removeAttr('disabled')
+    },
+
+    addMarker: function (lat, lon) {
+      let location = new google.maps.LatLng(lat, lon)
+      let self = this
+      let marker = new google.maps.Marker({
+        position: location,
+        map: self.map
+      })
+      this.markers.push(marker)
+    },
+
+    clearMarkers: function () {
+      for (let i = 0; i < this.markers.length; i++) {
+        this.markers[i].setMap(null)
+      }
+    },
+
+    getBounds: function (objArray, key) {
+      let maxValue = -Infinity
+      let minValue = Infinity
+  
+      for (let i = 0; i < objArray.length; i++) {
+        if (objArray[i][key] !== 0) {
+          maxValue = Math.max(objArray[i][key], maxValue)
+          minValue = Math.min(objArray[i][key], minValue)
+        }
+      }
+
+      return [minValue, maxValue]
+    },
+
+    zoomToMarkers: function (output) {
+      let [latMin, latMax] = this.getBounds(output, 'latitude')
+      let [lonMin, lonMax] = this.getBounds(output, 'longitude')
+
+      let mapBounds = new google.maps.LatLngBounds()
+      let minBounds = new google.maps.LatLng(latMin, lonMin)
+      let maxBounds = new google.maps.LatLng(latMax, lonMax)
+
+      mapBounds.extend(minBounds)
+      mapBounds.extend(maxBounds)
+      this.map.fitBounds(mapBounds)
+    },
+
+    monitorProgress: function (output) {
+      this.processedCount++
+      $('#progress').text(this.successCount + ' of ' + this.rowCount + ' found and ' + this.failureCount + ' failures')
+
+      if (this.processedCount === this.rowCount) {
+        this.zoomToMarkers(output)
+        this.makeGeoJSON(output)
+        this.makeCSV(output)
+        this.geojsonButton.removeAttr('disabled')
+        this.csvButton.removeAttr('disabled')
       }
     }
   }
 
-  $.post('https://api.github.com/gists', JSON.stringify(data), function (d) {
+  var Geocoder = function (app, map) {
+    this.delay = 200
+    this.app = app
+    this.input = []
+    this.output = []
+    this.failures = []
+  }
 
-    var gist_result = $('#gist_result')
-    console.log(d.html_url)
-    gist_result.attr('href', d.html_url)
-    gist_result.text('Map now accessible here')
-    console.log(d)
-  })
+  Geocoder.prototype = {
+    reset: function () {
+      this.output = new Array(this.input.length)
+      this.failures = []
+    },
 
-}
+    run: function (field) {
+      let index = 0
+      let self = this
+      function runner () {
+        if (index < self.input.length) {
+          self.geocodeAddress(self.input[index][field], index)
+          index++
+        } else {
+          clearInterval(timer)
+        }
+      }
+
+      let timer = setInterval(runner, this.delay)
+    },
+
+    geocodeAddress: function (address, index) {
+      let encodedAddress = encodeURIComponent(address.toLowerCase().replace(/[ ]/g, '+'))
+
+      let url = 'https://query.yahooapis.com/v1/public/yql?q=SELECT%20*%20FROM%20xml%20WHERE%20url%3D%27http%3A%2F%2Fgeospatial.dcgis.dc.gov%2FwsProxy%2Fproxy_LocVerifier.asmx%2FfindLocation_all%3Fstr%3D' + encodedAddress + "%27%20AND%20itemPath%3D%27ReturnObject.returnDataset.diffgram.NewDataSet.Table1'&format=json&diagnostics=true&callback="
+      let self = this
+
+      let data = {
+        'latitude': 0,
+        'longitude': 0
+      }
+
+      if (address.length > 0) {
+        $.get(url, function (res) {
+          try {
+            data = res.query.results.Table1
+
+            if (data.length > 0) {
+              data = data[0]
+            }
+
+            data['latitude'] = parseFloat(data['LATITUDE'])
+            data['longitude'] = parseFloat(data['LONGITUDE'])
+            delete data['LATITUDE']
+            delete data['LONGITUDE']
+
+            self.output[index] = Object.assign(self.input[index], data)
+
+            self.fields = new Set([...self.fields, Object.keys(data)])
+            self.app.addMarker(data['latitude'], data['longitude'])
+            self.app.successCount++
+          } catch (e) {
+            self.output[index] = Object.assign(self.input[index], data)
+            self.app.failureCount++
+            self.app.addFailure({
+              'row': index + 1,
+              'text': address
+            })
+          }
+
+          self.app.monitorProgress(self.output)
+        })
+      } else {
+        self.app.successCount++
+        self.app.monitorProgress(self.output)
+      }
+    }
+  }
+
+  window.onload = function () {
+    let app = new App()
+
+    $('#uploadButton').on('change', function (event) {
+      app.loadFile(event)
+      app.fieldMenu
+    })
+
+    app.fieldMenu.on('change', function (event) {
+      app.reset()
+    })
+
+    app.failureButton.on('click', function (event) {
+      app.toggleFailures()
+    })
+
+    app.geocodeButton.on('click', function (event) {
+      app.reset()
+      app.map = new google.maps.Map(document.getElementById('map'), app.mapOptions)
+      let locationField = $('#fieldMenu option:selected').text()
+      app.geocoder.run(locationField)
+    })
+
+    app.gistButton.on('click', function (event) {
+      app.postGist()
+    })
+
+    app.inputButton.on('change', function (event) {
+      geocoder.loadFile(event)
+    }, false)
+  }
+})()

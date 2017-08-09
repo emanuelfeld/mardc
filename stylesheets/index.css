@@ -77,8 +77,18 @@ button a {
   overflow: auto
 }
 
+#failures.hidden {
+  display: none;
+}
+
 .hidden {
   display: none;
+}
+
+#tipJar {
+  border: 2px white solid;
+  border-radius: 5px;
+  padding: 0 5px 0 5px;
 }
 
 #map {

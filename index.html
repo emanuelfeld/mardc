@@ -42,35 +42,35 @@
 					<div id="titleBox">
 						<div id="title">DC Geocoder+</div>
 						<div id="subtitle">
+                            <a href="https://paypal.me/efeld" id="tipJar" target="_blank">donate</a> &nbsp;
 							<a href="/mardc/about">instructions</a> &nbsp; 
-							<a href="/mardc/about#contact">contact</a> &nbsp; 
-							<a href="https://github.com/emanuelfeld/mardc/tree/gh-pages">code</a>
+							<a href="/mardc/about#contact">contact</a>
 						</div>
 					</div>
-					<div>
+                    <div id="fileStep">
 						<h2>1. Select your file:</h2>
 						<input type="file" value="hello" id="uploadButton" name="files[]" accept="text/csv,text/tab-separated-values,.txt"/>					
 						<div class="message" style="padding-top:10px">No CSV handy? Try it out with <a href="/mardc/assets/mardc_test.csv" target="_blank" download="mardc_test.csv">this one</a>.</div>
 					</div>
-					<div>
+                    <div id="fieldStep">
 						<h2>2. Choose location column:</h2>
 						<select class="fieldMenu" id="fieldMenu" disabled="disabled">
 							<option selected="selected" disabled="disabled">This Column</option>
 						</select>
 					</div>
-					<div>
+                    <div id="runStep">
 						<h2>3. Run the tool:</h2>
 						<button id="geocodeButton" type="submit" disabled="disabled">Go!</button>
 						<span id="progress" class="message"></span><br>
 						<button id="failureButton" type="submit" disabled="disabled">View Failures</button>
 						<div id="failures" class="message hidden"></div>
 					</div>
-					<div>
+                    <div id="downloadStep">
 						<h2>4. Download the result:</h2>
 						<button id="csvButton" type="submit" disabled="disabled">CSV</button><br>
 						<button id="geojsonButton" type="submit" disabled="disabled">GeoJSON</button>
 					</div>
-					<div>
+                    <div id="gistStep">
 						<h2>5. Save the map:</h2>
 						<button id="gistButton" type="submit" disabled="disabled">Create Gist</button>
 						<span class="message" id="gist"><a id="gistResult" href="" target="_blank"></a></span>
